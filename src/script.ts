@@ -1,6 +1,3 @@
-const gameName: string = "EarthDefender!";
-console.log(gameName);
-
 import {Game} from "./Classes/Game.js";
 
 window.onload = ()=>{
