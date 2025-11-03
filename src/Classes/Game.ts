@@ -16,6 +16,9 @@ export class Game {
     private player: Player;
     private gameObjects: GameObject[] = [];
     private earth: Earth
+    private score: number = 0;
+    private isGameOver: boolean = false;
+
 
     constructor() {
         // Init Game canvas
@@ -23,6 +26,12 @@ export class Game {
         canvas.height = this.CANVAS_HEIGHT;
         canvas.width = this.CANVAS_WIDTH;
         this.context = canvas.getContext("2d");
+        window.addEventListener("keydown", (event) => {
+            if (this.isGameOver && event.key.toLowerCase() === "r") {
+                window.location.reload(); // recharge la page
+            }
+        });
+
     }
 
     public start(): void {
@@ -58,14 +67,27 @@ export class Game {
         this.gameObjects.push(gameObject);
     }
     public over(): void {
-        alert("GameOver!")
-        window.location.reload();
+        this.isGameOver = true;
+    }
+    public getOver(): boolean {
+        return this.isGameOver;
     }
     public getPlayer(): Player {
         return this.player;
     }
     public destroy(gameObject: GameObject): void {
         this.gameObjects = this.gameObjects.filter(go => go != gameObject);
+    }
+    public addScore(points: number): void {
+        this.score += points;
+        console.log("Score:", this.score);
+    }
+
+    public getScore(): number {
+        return this.score;
+    }
+    public fixedScore(): void {
+        this.score += 0;
     }
 
     private draw(gameObject: GameObject) {
@@ -77,6 +99,25 @@ export class Game {
             gameObject.getImage().height
         );
     }
+    // Affichage du score
+    private drawScore() {
+        this.context.fillStyle = "white";
+        this.context.font = "24px Arial";
+        this.context.fillText("Score: " + this.score, 10, 30);
+    }
+    private printGameOver(): void {
+        this.context.fillStyle = "white";
+        this.context.font = "bold 48px Arial";
+        this.context.textAlign = "center";
+        this.context.fillText("GAME OVER", this.CANVAS_WIDTH / 2, this.CANVAS_HEIGHT / 2 - 20);
+
+        this.context.font = "24px Arial";
+        this.context.fillText("Score : " + this.score, this.CANVAS_WIDTH / 2, this.CANVAS_HEIGHT / 2 + 20);
+
+        this.context.font = "20px Arial";
+        this.context.fillText("Appuie sur R pour recommencer", this.CANVAS_WIDTH / 2, this.CANVAS_HEIGHT / 2 + 60);
+    }
+
 
     private loop() {
         setInterval(() => {
@@ -98,13 +139,17 @@ export class Game {
                     // +
                     // Si le gameObject chevauche un gameObject qui n'est pas lui-même
                     if (other != go && go.overlap(other)) {
-                        console.log("Deux GameObject différents se touchent");
+                        // console.log("Deux GameObject différents se touchent");
                         go.callCollide(other); // J'appelle la méthode collide de mon GameObject
                     }
                 })
 
             });
+            this.drawScore();
 
+            if (this.isGameOver) {
+                this.printGameOver();
+            }
         }, 10);
     }
 }

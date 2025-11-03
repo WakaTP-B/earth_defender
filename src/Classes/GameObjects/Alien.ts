@@ -3,7 +3,7 @@ import { GameObject } from "./GameObject.js"
 import { Player } from "./Player.js";
 
 export class Alien extends GameObject {
-    private speed: number = 4;
+    private speed: number = 2;
 
     protected start(): void {
         // Définissez l'image de l'alien
@@ -18,17 +18,18 @@ export class Alien extends GameObject {
     }
 
     protected update(): void {
+        const pos = this.getPosition();
         // Faites avancer l'alien vers le bas du Canvas
         this.setPosition({
-            x: this.getPosition().x,
-            y: this.getPosition().y += this.speed
+            x: pos.x,
+            y: pos.y + this.speed
         })
 
     }
-     protected collide(other: GameObject): void {
+    protected collide(other: GameObject): void {
         if (other instanceof Player) {
             console.log("Yummy Yummy!")
-            this.getGame().over()
+            this.getGame().over();
         }
     }
 }

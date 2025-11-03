@@ -38,9 +38,13 @@ var Laser = /** @class */ (function (_super) {
         }
     };
     Laser.prototype.collide = function (other) {
-        if (other instanceof Alien) {
-            this.getGame().destroy(other);
-            this.getGame().destroy(this);
+        if (this.getGame().getOver()) {
+            this.getGame().fixedScore();
+        }
+        else if (other instanceof Alien) {
+            this.getGame().addScore(10); // +10 points
+            this.getGame().destroy(other); // détruit l'alien
+            this.getGame().destroy(this); // détruit le laser
         }
     };
     return Laser;

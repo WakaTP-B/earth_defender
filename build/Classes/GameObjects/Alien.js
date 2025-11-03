@@ -20,7 +20,7 @@ var Alien = /** @class */ (function (_super) {
     __extends(Alien, _super);
     function Alien() {
         var _this = _super !== null && _super.apply(this, arguments) || this;
-        _this.speed = 4;
+        _this.speed = 2;
         return _this;
     }
     Alien.prototype.start = function () {
@@ -33,10 +33,11 @@ var Alien = /** @class */ (function (_super) {
         });
     };
     Alien.prototype.update = function () {
+        var pos = this.getPosition();
         // Faites avancer l'alien vers le bas du Canvas
         this.setPosition({
-            x: this.getPosition().x,
-            y: this.getPosition().y += this.speed
+            x: pos.x,
+            y: pos.y + this.speed
         });
     };
     Alien.prototype.collide = function (other) {

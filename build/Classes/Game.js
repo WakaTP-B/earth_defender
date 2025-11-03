@@ -5,16 +5,24 @@ import { Star } from "./GameObjects/Star.js";
 import { Earth } from "./GameObjects/Earth.js";
 var Game = /** @class */ (function () {
     function Game() {
+        var _this = this;
         // Public attributs
         this.CANVAS_WIDTH = 900;
         this.CANVAS_HEIGHT = 600;
         this.nbAliens = 10;
         this.gameObjects = [];
+        this.score = 0;
+        this.isGameOver = false;
         // Init Game canvas
         var canvas = document.querySelector("canvas");
         canvas.height = this.CANVAS_HEIGHT;
         canvas.width = this.CANVAS_WIDTH;
         this.context = canvas.getContext("2d");
+        window.addEventListener("keydown", function (event) {
+            if (_this.isGameOver && event.key.toLowerCase() === "r") {
+                window.location.reload(); // recharge la page
+            }
+        });
     }
     Game.prototype.start = function () {
         // Clear context
@@ -44,8 +52,10 @@ var Game = /** @class */ (function () {
         this.gameObjects.push(gameObject);
     };
     Game.prototype.over = function () {
-        alert("GameOver!");
-        window.location.reload();
+        this.isGameOver = true;
+    };
+    Game.prototype.getOver = function () {
+        return this.isGameOver;
     };
     Game.prototype.getPlayer = function () {
         return this.player;
@@ -53,8 +63,34 @@ var Game = /** @class */ (function () {
     Game.prototype.destroy = function (gameObject) {
         this.gameObjects = this.gameObjects.filter(function (go) { return go != gameObject; });
     };
+    Game.prototype.addScore = function (points) {
+        this.score += points;
+        console.log("Score:", this.score);
+    };
+    Game.prototype.getScore = function () {
+        return this.score;
+    };
+    Game.prototype.fixedScore = function () {
+        this.score += 0;
+    };
     Game.prototype.draw = function (gameObject) {
         this.context.drawImage(gameObject.getImage(), gameObject.getPosition().x, gameObject.getPosition().y, gameObject.getImage().width, gameObject.getImage().height);
+    };
+    // Affichage du score
+    Game.prototype.drawScore = function () {
+        this.context.fillStyle = "white";
+        this.context.font = "24px Arial";
+        this.context.fillText("Score: " + this.score, 10, 30);
+    };
+    Game.prototype.printGameOver = function () {
+        this.context.fillStyle = "white";
+        this.context.font = "bold 48px Arial";
+        this.context.textAlign = "center";
+        this.context.fillText("GAME OVER", this.CANVAS_WIDTH / 2, this.CANVAS_HEIGHT / 2 - 20);
+        this.context.font = "24px Arial";
+        this.context.fillText("Score : " + this.score, this.CANVAS_WIDTH / 2, this.CANVAS_HEIGHT / 2 + 20);
+        this.context.font = "20px Arial";
+        this.context.fillText("Appuie sur R pour recommencer", this.CANVAS_WIDTH / 2, this.CANVAS_HEIGHT / 2 + 60);
     };
     Game.prototype.loop = function () {
         var _this = this;
@@ -74,11 +110,15 @@ var Game = /** @class */ (function () {
                     // +
                     // Si le gameObject chevauche un gameObject qui n'est pas lui-même
                     if (other != go && go.overlap(other)) {
-                        console.log("Deux GameObject différents se touchent");
+                        // console.log("Deux GameObject différents se touchent");
                         go.callCollide(other); // J'appelle la méthode collide de mon GameObject
                     }
                 });
             });
+            _this.drawScore();
+            if (_this.isGameOver) {
+                _this.printGameOver();
+            }
         }, 10);
     };
     return Game;

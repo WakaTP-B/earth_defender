@@ -34,13 +34,19 @@ var Player = /** @class */ (function (_super) {
         });
     };
     Player.prototype.update = function () {
-        // console.log(Input.getAxisX());
-        this.setPosition({
-            x: this.getPosition().x += Input.getAxisX() * this.speed,
-            y: this.getPosition().y
-        });
+        var pos = this.getPosition();
+        var deltaX = Input.getAxisX() * this.speed;
+        var newX = pos.x + deltaX;
+        // Empêche de sortir du canvas
+        if (newX < 0)
+            newX = 0;
+        if (newX > this.getGame().CANVAS_WIDTH - this.getImage().width)
+            newX = this.getGame().CANVAS_WIDTH - this.getImage().width;
+        // Mise à jour de la position
+        this.setPosition({ x: newX, y: pos.y });
+        // Gestion du tir
         if (Input.getIsShooting() &&
-            ((Date.now() - this.lastShootTime) >= this.shootInterval_ms)) {
+            (Date.now() - this.lastShootTime) >= this.shootInterval_ms) {
             this.getGame().instanciate(new Laser(this.getGame()));
             this.lastShootTime = Date.now();
         }
